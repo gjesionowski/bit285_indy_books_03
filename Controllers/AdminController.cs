@@ -47,12 +47,16 @@ namespace IndyBooks.Controllers
         [HttpGet]
         public IActionResult Index(long id)
         {
-            IQueryable<Book> books = _db.Books;
-            //TODO: filter books by the id (if passed an id as its Route Parameter),
-            //     otherwise use the entire collection of Books, ordered by SKU.
-
-
-            return View("SearchResults", books);
+            IQueryable<Book> books = _db.Books.Include(b => b.Author);
+            if (id > 0)
+            {
+                books = books.Where(b => b.Id == id);
+                //TODO: filter books by the id (if passed an id as its Route Parameter),
+                //     otherwise use the entire collection of Books, ordered by SKU.
+                //return View("SearchResults", books);
+            }
+            
+            return View("SearchResults", books.OrderBy(b => b.SKU));
         }
         /***
          * UPDATE
