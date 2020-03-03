@@ -37,18 +37,13 @@ namespace IndyBooks.Controllers
             //TODO: Build the Writer object using the parameter
             if (bookVM.AuthorId != 0)
             {
-                author = new Writer
-                {
-                    Name = _db.Writers.Single(n => n.Id == bookVM.AuthorId).Name,
-                    Id = bookVM.AuthorId
-                };
+                author = _db.Writers.Single(n => n.Id == bookVM.AuthorId);
             }
             else
             {
                 author = new Writer
                 {
                     Name = bookVM.Name,
-                    Id = bookVM.AuthorId
                 };
             }
 
@@ -61,9 +56,9 @@ namespace IndyBooks.Controllers
                 Price = bookVM.Price,
                 Author = author
             };
-
+            
             //TODO: Add author and book to their DbSets; SaveChanges
-            _db.Writers.Update(author);
+            //_db.Writers.Update(author);
             _db.Books.Update(book);
             _db.SaveChanges();
             //Shows the book using the Index View 
