@@ -20,24 +20,37 @@ namespace IndyBooks.Controllers
         [HttpGet]
         public IActionResult CreateBook()
         {
+            AddBookViewModel addBookViewModel = new AddBookViewModel {Writers = _db.Writers};
+            
             //TODO: Populate a new AddBookViewModel object with a complete set of Writers
             //      and send it on to the View "AddBook"
 
-            return View();
+            return View("AddBook", addBookViewModel);
         }
         [HttpPost]
         public IActionResult CreateBook(AddBookViewModel bookVM)
         {
             //TODO: Build the Writer object using the parameter
-            Writer author;
-            
+            Writer author = new Writer 
+            { 
+                Name = bookVM.Name,
+                Id = bookVM.AuthorId,
+            };
 
             //TODO: Build the Book using the parameter data and your newly created author.
-            Book book; 
+            Book book = new Book
+            {
+                Id = bookVM.Id,
+                Title = bookVM.Title,
+                SKU = bookVM.SKU,
+                Price = bookVM.Price,
+                Author = author
+            };
 
             //TODO: Add author and book to their DbSets; SaveChanges
-           
-
+            _db.Writers.Update(author);
+            _db.Books.Add(book);
+            _db.SaveChanges();
             //Shows the book using the Index View 
             return RedirectToAction("Index", new { id = bookVM.Id });
         }
@@ -64,6 +77,20 @@ namespace IndyBooks.Controllers
          //TODO: Write a method to take a book id, and load book and author info
          //      into the ViewModel for the AddBook View
          [HttpGet]
+         public IActionResult UpdateBook(long id)
+        {
+            var book = _db.Books.Include(b => b.Author).Single(b => b.Id == id);
+            AddBookViewModel addBookViewModel = new AddBookViewModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                SKU = book.SKU,
+                Price = book.Price,
+                Name = book.Author.Name,
+                AuthorId = book.Author.Id
+            };
+            return View("AddBook", addBookViewModel);
+        }
 
         /***
          * DELETE
