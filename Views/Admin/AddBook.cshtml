@@ -16,9 +16,9 @@
                 asp-items="@(new SelectList(Model.Writers,"Id","Name"))">
             <option>Please select one</option>
         </select>
-        OR
-        <label asp-for="@Model.Name"></label>
-        <input asp-for="@Model.Name" />
+        OR enter new author
+        <label></label>
+        <input asp-for="@Model.Name" placeholder=""/>
 
     </div>
     <!-- TODO: Add the rest of the label and input fields needed for a Book-->

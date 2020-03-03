@@ -12,7 +12,7 @@ namespace IndyBooks.ViewModels
         public string SKU { get; set; }
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
-        [Display(Name = "OR enter new Author")]
+        [Display(Name = "Author Name")]
         public String Name { get; set; }
 
         //Add properties to support a Writer's SelectList (Id and Writers)

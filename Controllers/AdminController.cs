@@ -20,7 +20,10 @@ namespace IndyBooks.Controllers
         [HttpGet]
         public IActionResult CreateBook()
         {
-            AddBookViewModel addBookViewModel = new AddBookViewModel {Writers = _db.Writers};
+            AddBookViewModel addBookViewModel = new AddBookViewModel 
+            {
+                Writers = _db.Writers.Include(w => w.Books)
+            };
             
             //TODO: Populate a new AddBookViewModel object with a complete set of Writers
             //      and send it on to the View "AddBook"
@@ -30,12 +33,24 @@ namespace IndyBooks.Controllers
         [HttpPost]
         public IActionResult CreateBook(AddBookViewModel bookVM)
         {
+            Writer author;
             //TODO: Build the Writer object using the parameter
-            Writer author = new Writer 
-            { 
-                Name = bookVM.Name,
-                Id = bookVM.AuthorId,
-            };
+            if (bookVM.AuthorId != 0)
+            {
+                author = new Writer
+                {
+                    Name = _db.Writers.Single(n => n.Id == bookVM.AuthorId).Name,
+                    Id = bookVM.AuthorId
+                };
+            }
+            else
+            {
+                author = new Writer
+                {
+                    Name = bookVM.Name,
+                    Id = bookVM.AuthorId
+                };
+            }
 
             //TODO: Build the Book using the parameter data and your newly created author.
             Book book = new Book
@@ -49,7 +64,7 @@ namespace IndyBooks.Controllers
 
             //TODO: Add author and book to their DbSets; SaveChanges
             _db.Writers.Update(author);
-            _db.Books.Add(book);
+            _db.Books.Update(book);
             _db.SaveChanges();
             //Shows the book using the Index View 
             return RedirectToAction("Index", new { id = bookVM.Id });
@@ -87,7 +102,9 @@ namespace IndyBooks.Controllers
                 SKU = book.SKU,
                 Price = book.Price,
                 Name = book.Author.Name,
-                AuthorId = book.Author.Id
+                AuthorId = book.Author.Id,
+                Writers = _db.Writers.OrderBy(b => b.Name)           // 
+
             };
             return View("AddBook", addBookViewModel);
         }
@@ -99,8 +116,8 @@ namespace IndyBooks.Controllers
         public IActionResult DeleteBook(long id)
         {
             //TODO: Remove the Book associated with the given id number; Save Changes
-
-
+            _db.Remove<Book>(new Book { Id = id });
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
